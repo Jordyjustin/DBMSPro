@@ -5,6 +5,8 @@ if (!isset($_SESSION["user_id"])) {
     die("Please <a href='login.php'>login</a> to add books.");
 }
 
+$message = ""; // Initialize the message variable
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $title = $_POST["title"];
     $author = $_POST["author"];
@@ -15,9 +17,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bind_param("ssdi", $title, $author, $price, $seller_id);
     
     if ($stmt->execute()) {
-        echo "<p style='color:green;'>Book added successfully!</p>";
+        $message = "<p style='color:green;'>Book added successfully!</p>";
     } else {
-        echo "<p style='color:red;'>Error adding book.</p>";
+        $message = "<p style='color:red;'>Error adding book.</p>";
     }
 }
 ?>
@@ -40,7 +42,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            flex-direction: column; /* Stack elements vertically */
+            min-height: 100vh;
         }
 
         /* Header */
@@ -57,6 +60,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             width: 100%;
         }
 
+        /* Message Container */
+        .message-container {
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            margin-top: 80px; /* To account for the fixed header */
+        }
+
         /* Container */
         .container {
             background: #fff;
@@ -65,7 +76,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             max-width: 400px;
             width: 100%;
-            margin-top: 80px; /* To account for the fixed header */
+            margin-top: 20px; /* Space between message and container */
         }
 
         h2 {
@@ -144,6 +155,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
     <header>Add a Book</header>
+    <!-- Message Container -->
+    <div class="message-container">
+        <?php echo $message; ?> <!-- Display success/error message here -->
+    </div>
+    <!-- Form Container -->
     <div class="container">
         <h2>Enter Book Details</h2>
         <form method="post">
