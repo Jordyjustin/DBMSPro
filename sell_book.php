@@ -20,8 +20,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["book_id"])) {
     }
 }
 
-// Fetch available books
-$result = $conn->query("SELECT id, title, author, price FROM books");
+// Fetch available books with seller's name
+$result = $conn->query("
+    SELECT books.id, books.title, books.author, books.price, users.name AS seller_name 
+    FROM books 
+    JOIN users ON books.seller_id = users.id
+");
 ?>
 
 <!DOCTYPE html>
@@ -104,6 +108,13 @@ $result = $conn->query("SELECT id, title, author, price FROM books");
             color: #555;
         }
 
+        .seller-name {
+            font-size: 1rem;
+            color: #007bff; /* Highlight seller name with a blue color */
+            font-weight: 500; /* Slightly bold */
+            margin-bottom: 0.5rem; /* Space between seller name and book title */
+        }
+
         /* Buttons */
         .btn {
             display: inline-block;
@@ -150,7 +161,8 @@ $result = $conn->query("SELECT id, title, author, price FROM books");
         <div class="book-list">
             <?php while ($book = $result->fetch_assoc()): ?>
                 <div class="book">
-                    <strong><?php echo htmlspecialchars($book["title"]); ?></strong>
+                    <p class="seller-name">Sold by: <?php echo htmlspecialchars($book["seller_name"]); ?></p> <!-- Seller name at the top -->
+                    <strong><?php echo htmlspecialchars($book["title"]); ?></strong> <!-- Book title -->
                     <p>Author: <?php echo htmlspecialchars($book["author"]); ?></p>
                     <p>Price: $<?php echo number_format($book["price"], 2); ?></p>
                     <form method="post">
